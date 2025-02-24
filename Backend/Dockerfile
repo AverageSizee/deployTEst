@@ -1,14 +1,9 @@
 # Use a compatible JDK 23 image
-FROM eclipse-temurin:23-jdk
+FROM eclipse-temurin:23-jdk AS build
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the JAR file from the target directory
-COPY target/*.jar app.jar
-
-# Expose port 8080
+FROM openjdk:25-slim
+COPY --from=build /target/Backend-0.0.1-SNAPSHOT.jar backend.jar
 EXPOSE 8080
-
-# Run the application
-CMD ["java", "-jar", "app.jar"]
+ENTRYPOINT [ "java", "-jar", "backend.jar" ]
