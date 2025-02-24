@@ -1,15 +1,11 @@
 FROM openjdk:23-jdk AS build
-WORKDIR /app
+WORKDIR /Backend
 
 COPY . .
 
 # Install Maven
 RUN curl -sL https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz | tar xz -C /opt
 RUN ln -s /opt/apache-maven-3.8.6/bin/mvn /usr/bin/mvn
-
-# Copy only the necessary files first
-WORKDIR /app/Backend  # Change working directory to Backend
-
 
 
 # Run Maven build
