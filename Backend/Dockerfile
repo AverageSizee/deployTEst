@@ -1,7 +1,7 @@
 # Use a compatible JDK 23 image
 FROM eclipse-temurin:23-jdk AS build
 COPY . .
-RUN mvn clean package -DskipTests
+RUN mvn clean package 
 
 FROM openjdk:25-slim
 COPY --from=build /target/Backend-0.0.1-SNAPSHOT.jar backend.jar
