@@ -1,32 +1,16 @@
-# Use a stable JDK (21) to build the project
-FROM eclipse-temurin:21-jdk AS build
+FROM openjdk:23-jdk AS build
+WORKDIR /app
 
+# Install Maven
+RUN curl -sL https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz | tar xz -C /opt
+RUN ln -s /opt/apache-maven-3.8.6/bin/mvn /usr/bin/mvn
 
-# Copy Maven Wrapper and project files
-COPY mvnw ./
-COPY .mvn .mvn
 COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Ensure Maven wrapper is executable
-RUN chmod +x mvnw
-
-# Download dependencies (cached layer)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy the source code
-COPY src src
-
-# Build the application
-RUN ./mvnw clean package -DskipTests
-
-# Use a smaller JRE for the final image
-FROM eclipse-temurin:21-jre
-
-# Copy the built JAR file
-COPY --from=build /app/target/*.jar backend.jar
-
-# Expose the application port
+FROM openjdk:23-slim
+WORKDIR /app
+COPY --from=build /app/target/BackEnd-0.0.1-SNAPSHOT.jar BackEnd.jar
 EXPOSE 8080
-
-# Start the application
-ENTRYPOINT [ "java", "-jar", "backend.jar" ]
+ENTRYPOINT ["java", "-jar", "BackEnd.jar"]
