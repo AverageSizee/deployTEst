@@ -1,8 +1,6 @@
 # Use a stable JDK (21) to build the project
 FROM eclipse-temurin:21-jdk AS build
 
-# Set working directory
-WORKDIR /app
 
 # Copy Maven Wrapper and project files
 COPY mvnw ./
@@ -23,9 +21,6 @@ RUN ./mvnw clean package -DskipTests
 
 # Use a smaller JRE for the final image
 FROM eclipse-temurin:21-jre
-
-# Set working directory
-WORKDIR /app
 
 # Copy the built JAR file
 COPY --from=build /app/target/*.jar backend.jar
